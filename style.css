@@ -1,0 +1,66 @@
+body {
+  font-family: Arial, sans-serif;
+  padding: 20px;
+  background-color: #f7f7f7!important;
+}
+#nav{
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+h1 {
+  font-size:16px;
+  text-align: center;
+}
+.logo{
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+}
+.tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  justify-content: center;
+  margin: 2rem 0;
+}
+.tabs button {
+  padding: 10px 20px;
+  background: #007acc;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+#content {
+  background: white;
+  padding: 20px;
+  border-radius: 10px;
+  max-width: 600px;
+  margin: auto;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+textarea {
+  width: 100%;
+  height: 100px;
+}
+.comentario {
+  border-bottom: 1px solid #ddd;
+  margin-bottom: 10px;
+}
+
+.calificacion.selected, .puntuacion {
+  color: gold;
+}
+#content img {
+  width: 500px;      
+  height: 400px;     
+  object-fit: cover; 
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  margin-bottom: 1rem;
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+}
+
