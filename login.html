@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Login / Registro</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div class="container" id="auth-container">
+    <h1 id="form-title">Iniciar Sesión</h1>
+    <form id="loginForm">
+      <input type="email" id="email" placeholder="Email" required />
+      <input type="password" id="password" placeholder="Contraseña" required />
+    <input type="password" id="confirm-password" placeholder="Confirmar contraseña" class="hidden" />
+    </form>
+    <button id="submitBtn">Ingresar</button>
+    <button id="toggleBtn">¿No tenés cuenta? Registrate</button>
+    <hr />
+    <button id="googleBtn">Ingresar con Google</button>
+    <br><br>
+    <a href="encuestas.html" class="back-button">Volver al inicio</a>
+  </div>
+
+  <script type="module" src="app.js"></script>
+</body>
+</html>
