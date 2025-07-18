@@ -260,6 +260,8 @@ window.addEventListener("online", () => {
 });
 
 inicializarDB().then(() => {
+  if (navigator.onLine) enviarComentariosPendientes();
+  
   const ultima = localStorage.getItem('ultimaCategoria');
   if (ultima) {
     const btn = document.querySelector(`button[data-tab="${ultima}"]`);
