@@ -66,35 +66,15 @@ export async function guardarComentario(categoria, comentario) {
 }
 
 export async function guardarComentarioOffline(categoria, comentario) {
-  console.log("Intentando guardar comentario offline:", categoria, comentario);
-
   const dbInstance = await getDB();
-  if (!dbInstance) {
-    console.error(" No se pudo obtener instancia de IndexedDB");
-    return;
-  }
-
   return new Promise((resolve, reject) => {
-    try {
-      const tx = dbInstance.transaction("comentariosPendientes", "readwrite");
-      const store = tx.objectStore("comentariosPendientes");
-      const request = store.add({ ...comentario, categoria });
-
-      request.onsuccess = () => {
-        console.log("✅ Comentario guardado offline en IndexedDB");
-        resolve();
-      };
-      request.onerror = e => {
-        console.error(" Error al guardar en IndexedDB:", e.target.error);
-        reject(e.target.error);
-      };
-    } catch (err) {
-      console.error("Error inesperado al guardar offline:", err);
-      reject(err);
-    }
+    const tx = dbInstance.transaction("comentariosPendientes", "readwrite");
+    const store = tx.objectStore("comentariosPendientes");
+    const request = store.add({ ...comentario, categoria });
+    request.onsuccess = () => resolve();
+    request.onerror = e => reject(e.target.error);
   });
 }
-
 
 export async function obtenerComentariosPendientes() {
   const dbInstance = await getDB();
