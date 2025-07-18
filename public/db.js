@@ -1,4 +1,8 @@
-import { getFirestore, collection, addDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+import { getFirestore, collection, addDoc, query, getDocs } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+import { firebaseApp } from "./app.js"; // Importa la instancia ya inicializada
+
+const firestore = getFirestore(firebaseApp); // Usa esa instancia para inicializar Firestore
+
 
 let db;
 let dbReadyResolver;
@@ -31,7 +35,6 @@ async function getDB() {
   return db;
 }
 
-const firestore = getFirestore();
 
 export async function guardarComentario(categoria, comentario) {
   try {
