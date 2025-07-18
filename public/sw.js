@@ -10,29 +10,51 @@ const CACHE_FILES = [
   '/assets/subte.jpg',
   '/assets/seguridad.jpg',
   '/assets/accesibilidad.jpg',
-  './login.html'
+  '/login.html'
 ];
 
+// 1. Instalación: caché de archivos esenciales
 self.addEventListener('install', event => {
   event.waitUntil(
     caches.open(CACHE_NAME)
-  .then(cache => cache.addAll(CACHE_FILES))
+      .then(cache => cache.addAll(CACHE_FILES))
       .catch(err => console.error('Fallo al cachear:', err))
   );
 });
 
-self.addEventListener('fetch', event => {
-  event.respondWith(
-    caches.match(event.request).then(response => response || fetch(event.request))
+// 2. Activación: eliminar caches antiguos
+self.addEventListener('activate', event => {
+  event.waitUntil(
+    caches.keys().then(keys =>
+      Promise.all(
+        keys.filter(key => key !== CACHE_NAME)
+          .map(key => caches.delete(key))
+      )
+    )
   );
 });
 
+// 3. Fetch: responder desde cache o red
+self.addEventListener('fetch', event => {
+  event.respondWith(
+    caches.match(event.request).then(resp => {
+      return resp || fetch(event.request).catch(() => {
+        return new Response('Offline; recurso no en caché', {
+          status: 503,
+          statusText: 'Servicio no disponible'
+        });
+      });
+    })
+  );
+});
+
+
+// 4. Firebase FCM: configuración básica
 importScripts('https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js');
 importScripts('https://www.gstatic.com/firebasejs/10.12.2/firebase-messaging-compat.js');
 
-//DEBEN PONER SU CONFIGURACIÓN DE FIREBASE
 firebase.initializeApp({
-    apiKey: "AIzaSyBlhTmbEv6Bp2TTf-t5E2QqxssxXGxiNV0",
+  apiKey: "AIzaSyBlhTmbEv6Bp2TTf-t5E2QqxssxXGxiNV0",
   authDomain: "caba-encuestas-pwa.firebaseapp.com",
   projectId: "caba-encuestas-pwa",
   storageBucket: "caba-encuestas-pwa.firebasestorage.app",
@@ -42,45 +64,31 @@ firebase.initializeApp({
 
 const messaging = firebase.messaging();
 
+// 5. Mostrar notificación cuando llega un mensaje en segundo plano
 messaging.onBackgroundMessage(payload => {
-  self.registration.showNotification(payload.notification.title, {
-    body: payload.notification.body,
-    icon: "./icon.png"
+  console.log('[Service Worker] Notificación recibida:', payload);
+
+  const { title, body } = payload.notification;
+
+  self.registration.showNotification(title, {
+    body: body,
+    icon: './icon.png'
   });
 });
 
-self.addEventListener('install', event => {
+// 6. Manejar click en la notificación
+self.addEventListener('notificationclick', function(event) {
+  event.notification.close();
   event.waitUntil(
-    caches.open(CACHE_NAME).then(cache => {
-      return cache.addAll(CACHE_FILES);
-    })
-  );
-});
-
-
-self.addEventListener('activate', event => {
-  event.waitUntil(
-    caches.keys().then(keys =>
-      Promise.all(
-        keys.filter(key => key !== CACHE_NAME)
-            .map(key => caches.delete(key))
-      )
-    )
-  );
-});
-
-
-self.addEventListener('fetch', event => {
-  event.respondWith(
-    caches.match(event.request).then(resp => {
-      return resp || fetch(event.request).then(networkResp => {
-        return networkResp;
-      }).catch(() => {
-        return new Response('Offline; recurso no en caché', {
-          status: 503,
-          statusText: 'Servicio no disponible'
-        });
-      });
+    clients.matchAll({ type: "window" }).then(clientList => {
+      for (let client of clientList) {
+        if (client.url === '/' && 'focus' in client) {
+          return client.focus();
+        }
+      }
+      if (clients.openWindow) {
+        return clients.openWindow('/');
+      }
     })
   );
 });
