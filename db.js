@@ -1,3 +1,5 @@
+import { getFirestore, collection, addDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
 let db;
 let dbReadyResolver;
 const dbReadyPromise = new Promise((resolve) => { dbReadyResolver = resolve; });
@@ -24,22 +26,29 @@ export function inicializarDB() {
 }
 
 async function getDB() {
-  if(db) return db;
+  if (db) return db;
   await dbReadyPromise;
   return db;
 }
 
+const firestore = getFirestore();
+
 export async function guardarComentario(categoria, comentario) {
-  const dbInstance = await getDB();
-  return new Promise((resolve, reject) => {
-    const tx = dbInstance.transaction("comentarios", "readwrite");
-    const store = tx.objectStore("comentarios");
-    const request = store.add({ ...comentario, categoria });
-    request.onsuccess = () => resolve();
-    request.onerror = e => reject(e.target.error);
-  });
+  try {
+    // Guardar en Firestore si hay conexión
+    if (navigator.onLine) {
+      await addDoc(collection(firestore, categoria), comentario);
+    } else {
+      // Si no hay conexión, lanzar error para manejar fallback
+      throw new Error("Offline");
+    }
+  } catch (e) {
+    // Si falla (offline o error), re-lanzar para que app.js lo maneje con guardarComentarioOffline
+    console.error("Fallo al guardar en Firestore:", e.message);
+    throw e;
+  }
 }
-//agregado
+
 export async function guardarComentarioOffline(categoria, comentario) {
   const dbInstance = await getDB();
   return new Promise((resolve, reject) => {
@@ -50,7 +59,7 @@ export async function guardarComentarioOffline(categoria, comentario) {
     request.onerror = e => reject(e.target.error);
   });
 }
-//agregado
+
 export async function obtenerComentariosPendientes() {
   const dbInstance = await getDB();
   return new Promise((resolve, reject) => {
@@ -61,7 +70,7 @@ export async function obtenerComentariosPendientes() {
     request.onerror = e => reject(e.target.error);
   });
 }
-//agregado
+
 export async function eliminarComentarioPendiente(id) {
   const dbInstance = await getDB();
   return new Promise((resolve, reject) => {
@@ -73,6 +82,7 @@ export async function eliminarComentarioPendiente(id) {
   });
 }
 
+// Nota: esta función consulta solo los comentarios locales (IndexedDB)
 export async function traerComentarios(categoria) {
   const dbInstance = await getDB();
   return new Promise((resolve, reject) => {
@@ -85,5 +95,4 @@ export async function traerComentarios(categoria) {
     request.onerror = e => reject(e.target.error);
   });
 }
-
 

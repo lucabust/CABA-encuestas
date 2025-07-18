@@ -106,7 +106,7 @@ if (isLoginPage) {
     action
       .then(result => {
         localStorage.setItem("user", JSON.stringify({ email: result.user.email }));
-        window.location.href = "encuestas.html";
+        window.location.href = "index.html";
       })
       .catch(err => {
         console.error("Error de autenticación:", err);
@@ -118,7 +118,7 @@ if (isLoginPage) {
     signInWithPopup(auth, provider)
       .then(result => {
         localStorage.setItem("user", JSON.stringify({ email: result.user.email }));
-        window.location.href = "encuestas.html";
+        window.location.href = "index.html";
       })
       .catch(err => {
         if (err.code === "auth/popup-closed-by-user") {
