@@ -97,3 +97,16 @@ export async function eliminarComentarioPendiente(id) {
     request.onerror = e => reject(e.target.error);
   });
 }
+export async function traerComentarios(categoria) {
+  const dbInstance = await getDB();
+  return new Promise((resolve, reject) => {
+    const tx = dbInstance.transaction("comentarios", "readonly");
+    const store = tx.objectStore("comentarios");
+    const request = store.getAll();
+    request.onsuccess = () => {
+      resolve(request.result.filter(c => c.categoria === categoria));
+    };
+    request.onerror = e => reject(e.target.error);
+  });
+}
+
