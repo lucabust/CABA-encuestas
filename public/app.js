@@ -51,7 +51,7 @@ function solicitarPermisoNotificaciones() {
     if (permission === "granted") {
       navigator.serviceWorker.ready.then(registration => {
         getToken(messaging, {
-          vapidKey: VAPID_KEY,
+          vapidKey: BJI5B4HR2gJ6sGT2EnoZn67rOtiT-cW1u67iSqRyM1_QZtOVrto35KZ5ts-SIZ1Y6Z9p4Am3sbdIFY4C86Xx-yE,
           serviceWorkerRegistration: registration
         }).then(currentToken => {
           if (currentToken) console.log("Token FCM:", currentToken);
