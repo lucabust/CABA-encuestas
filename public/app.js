@@ -51,7 +51,7 @@ function solicitarPermisoNotificaciones() {
     if (permission === "granted") {
       navigator.serviceWorker.ready.then(registration => {
         getToken(messaging, {
-          vapidKey: BJI5B4HR2gJ6sGT2EnoZn67rOtiT-cW1u67iSqRyM1_QZtOVrto35KZ5ts-SIZ1Y6Z9p4Am3sbdIFY4C86Xx-yE,
+          vapidKey: VAPID_KEY, // ← Corrección
           serviceWorkerRegistration: registration
         }).then(currentToken => {
           if (currentToken) console.log("Token FCM:", currentToken);
@@ -62,6 +62,19 @@ function solicitarPermisoNotificaciones() {
     }
   });
 }
+
+// notificación del sistema
+onMessage(messaging, payload => {
+  console.log("Notificación en primer plano recibida:", payload);
+  const { title, body } = payload.notification;
+  if (Notification.permission === "granted") {
+    new Notification(title, {
+      body,
+      icon: ".assets/icon.png"
+    });
+  }
+});
+
 
 onMessage(messaging, payload => {
   alert(payload.notification.title + ": " + payload.notification.body);
