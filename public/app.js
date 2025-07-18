@@ -47,14 +47,20 @@ const isLoginPage = window.location.pathname.includes("login.html");
 
 // Notificaciones
 function solicitarPermisoNotificaciones() {
+  console.log("Solicitando permiso de notificaciones...");
   Notification.requestPermission().then(permission => {
+    console.log("Permiso:", permission);
     if (permission === "granted") {
       navigator.serviceWorker.ready.then(registration => {
         getToken(messaging, {
-          vapidKey: VAPID_KEY, // ← Corrección
+          vapidKey: VAPID_KEY,
           serviceWorkerRegistration: registration
         }).then(currentToken => {
-          if (currentToken) console.log("Token FCM:", currentToken);
+          if (currentToken) {
+            console.log("Token FCM:", currentToken);
+          } else {
+            console.warn("No se pudo obtener el token.");
+          }
         }).catch(err => {
           console.error("Error al obtener token:", err);
         });
@@ -63,28 +69,22 @@ function solicitarPermisoNotificaciones() {
   });
 }
 
-// notificación del sistema
+// Notificación en primer plano
 onMessage(messaging, payload => {
   console.log("Notificación en primer plano recibida:", payload);
   const { title, body } = payload.notification;
   if (Notification.permission === "granted") {
     new Notification(title, {
       body,
-      icon: ".assets/icon.png"
+      icon: "assets/icon.png"
     });
   }
-});
-
-
-onMessage(messaging, payload => {
-  alert(payload.notification.title + ": " + payload.notification.body);
 });
 
 // Autenticación
 if (isLoginPage) {
   let isLogin = true;
 
- 
   const mensaje = localStorage.getItem("mensajeLogin");
   if (mensaje) {
     const aviso = document.createElement("div");
@@ -145,11 +145,12 @@ if (isLoginPage) {
         }
       });
   });
+
 } else {
   const saved = JSON.parse(localStorage.getItem("user"));
-  // Ya no redirigimos si no está autenticado
-  if (saved?.email && welcomeText) {
-    welcomeText.textContent = saved.email;
+
+  if (saved?.email) {
+    if (welcomeText) welcomeText.textContent = saved.email;
     if (logoutBtn) {
       logoutBtn.classList.remove("hidden");
       loginBtn?.classList.add("hidden");
@@ -274,7 +275,7 @@ window.addEventListener("online", () => {
 
 inicializarDB().then(() => {
   if (navigator.onLine) enviarComentariosPendientes();
-  
+
   const ultima = localStorage.getItem('ultimaCategoria');
   if (ultima) {
     const btn = document.querySelector(`button[data-tab="${ultima}"]`);
