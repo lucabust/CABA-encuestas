@@ -1,8 +1,22 @@
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
 import { getFirestore, collection, addDoc, query, getDocs } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
-import { firebaseApp } from "./app.js"; // Importa la instancia ya inicializada
 
-const firestore = getFirestore(firebaseApp); // Usa esa instancia para inicializar Firestore
+// Configuración de Firebase (copiada desde app.js)
+const firebaseConfig = {
+  apiKey: "AIzaSyBlhTmbEv6Bp2TTf-t5E2QqxssxXGxiNV0",
+  authDomain: "caba-encuestas-pwa.firebaseapp.com",
+  projectId: "caba-encuestas-pwa",
+  storageBucket: "caba-encuestas-pwa.firebasestorage.app",
+  messagingSenderId: "627050396363",
+  appId: "1:627050396363:web:1e57c9bf57870b7c94794e"
+};
 
+// Inicializar Firebase y Firestore (solo una vez en este archivo)
+const firebaseApp = initializeApp(firebaseConfig);
+const firestore = getFirestore(firebaseApp);
+
+
+// ===================== IndexedDB + Firestore =====================
 
 let db;
 let dbReadyResolver;
@@ -36,17 +50,16 @@ async function getDB() {
 }
 
 
+// ===================== Guardado de Comentarios =====================
+
 export async function guardarComentario(categoria, comentario) {
   try {
-    // Guardar en Firestore si hay conexión
     if (navigator.onLine) {
       await addDoc(collection(firestore, categoria), comentario);
     } else {
-      // Si no hay conexión, lanzar error para manejar fallback
       throw new Error("Offline");
     }
   } catch (e) {
-    // Si falla (offline o error), re-lanzar para que app.js lo maneje con guardarComentarioOffline
     console.error("Fallo al guardar en Firestore:", e.message);
     throw e;
   }
@@ -85,7 +98,7 @@ export async function eliminarComentarioPendiente(id) {
   });
 }
 
-// Nota: esta función consulta solo los comentarios locales (IndexedDB)
+// Opcional: traer comentarios guardados localmente
 export async function traerComentarios(categoria) {
   const dbInstance = await getDB();
   return new Promise((resolve, reject) => {
@@ -98,4 +111,3 @@ export async function traerComentarios(categoria) {
     request.onerror = e => reject(e.target.error);
   });
 }
-
