@@ -1,7 +1,7 @@
 const CACHE_NAME = 'encuestas-caba-v1';
 const CACHE_FILES = [
   '/',
-  '/encuestas.html',
+  '/index.html',
   '/app.js',
   '/assets/limpieza.jpg',
   '/assets/transporte.jpg',

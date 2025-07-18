@@ -1,7 +1,7 @@
-import { traerComentarios } from '../db.js';
+import { traerComentariosDesdeFirestore } from '../db.js';
 
 export async function mostrarComentarios(categoria, container) {
-  const comentarios = await traerComentarios(categoria);
+  const comentarios = await traerComentariosDesdeFirestore(categoria);
   container.innerHTML = comentarios.map(c => `
     <div class="comentario">
       <strong class="puntuacion">${"★".repeat(c.calificacion)}</strong><br/>

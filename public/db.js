@@ -109,4 +109,16 @@ export async function traerComentarios(categoria) {
     request.onerror = e => reject(e.target.error);
   });
 }
+export async function traerComentariosDesdeFirestore(categoria) {
+  try {
+    const ref = collection(firestore, categoria);
+    const q = query(ref); // Podés agregar orderBy si querés ordenar por fecha
+    const snapshot = await getDocs(q);
+    return snapshot.docs.map(doc => doc.data());
+  } catch (e) {
+    console.error("Error al traer comentarios de Firestore:", e);
+    return [];
+  }
+}
+
 
